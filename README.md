@@ -1,6 +1,6 @@
 # Spotify Listening Analysis with Tableau
 
-This project provides Tableau Public dashboards configured to analyze personal Spotify listening history. Personal listening history can be obtained from Spotify via a request process. 
+
 
 ## Data Source
 - Personal Spotify account data requested through Spotify's official data download process
@@ -12,7 +12,6 @@ This project provides Tableau Public dashboards configured to analyze personal S
 - *TBD*
 
 ## Prerequisites
-- Tableau Public
 - Spotify Account (Paid or Free)
 
 ## Installation
@@ -32,10 +31,4 @@ This project provides Tableau Public dashboards configured to analyze personal S
    git clone https://github.com/pjtat/spotify-tableau-data-visualization.git
    ```
 
-3. Download Tableau Public (https://public.tableau.com/app/discover)
-
-4. Open the Tableau Dashboards in this repository
-
-5. Add your Spotify listening history to the project 
-
-**Note:** You may have multiple files to encompass all of your listening history. If so, please combine them as a *Union* in Tableau. (https://help.tableau.com/current/pro/desktop/en-us//joining_tables.htm)
+3. 

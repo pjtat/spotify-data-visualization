@@ -19,7 +19,7 @@ for filename in os.listdir(export_path):
                 combined_spotify_export.extend(data)
 
 # Specify the output file
-output_file = 'combined_data.json'
+output_file = 'combined_spotify_data.json'
 
 # Write the combined data to a new JSON file
 with open(output_file, 'w') as f:

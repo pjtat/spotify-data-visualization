@@ -1,4 +1,5 @@
 exported_data
+combined_spotify_data_modified.json
+combined_spotify_data_raw.json
+**/config.py
 **/.DS_Store
-.env
-combined_spotify_data.json

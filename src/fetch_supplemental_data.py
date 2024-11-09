@@ -34,16 +34,18 @@ def main():
       supplemental_artist_data = []
       supplemental_album_data = []
       supplemental_track_data = []
+
    for item in modified_data:
       # Identify track ID and pull track information
       track_id = item['id']
-      track_info = spotify_api_client.get_track_chart_info(track_id)
 
       # Check if track exists in current data
       track_exists = any(track['track_id'] == track_id for track in supplemental_track_data)
       logging.info(f"Checking track {track_id}: {'exists' if track_exists else 'new'}")
 
       if not track_exists:
+         # Pull the track information
+         track_info = spotify_api_client.get_track_chart_info(track_id)
 
          supplemental_track_data.append({
             'track_id': track_id,

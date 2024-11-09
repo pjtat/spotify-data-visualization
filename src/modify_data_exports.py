@@ -1,7 +1,12 @@
 import os
-from os.path import dirname
 import json
-from config import IGNORE_ARTISTS, IGNORE_ALBUMS, IGNORE_TRACKS
+
+from os.path import dirname
+from config import IGNORE_ARTISTS, IGNORE_ALBUMS, IGNORE_TRACKS, UNNEEDED_FIELDS, FIELDS_TO_RENAME
+
+# Initialize Spotify API client
+from fetch_spotify_data import SpotifyApiClient
+spotify_api_client = SpotifyApiClient()
 
 class ModifyDataExports:
     def __init__(self):
@@ -32,106 +37,88 @@ class ModifyDataExports:
         with open(output_file_modified, 'w') as f:
             json.dump(combined_spotify_export, f, indent=2)
 
-    
+    def remove_null_items(self):
+        # Pull in the existing combined export
+        with open('combined_spotify_data_modified.json', 'r') as f:
+            modified_data = json.load(f)
+
+        # Filter out items with null values for track, artist, AND album
+        modified_data_without_null_items = [
+            item for item in modified_data
+            if not (
+                (item['master_metadata_track_name'] is None or item['master_metadata_track_name'] == 'null') and
+                (item['master_metadata_album_artist_name'] is None or item['master_metadata_album_artist_name'] == 'null') and
+                (item['master_metadata_album_album_name'] is None or item['master_metadata_album_album_name'] == 'null')
+            )
+        ]
+        
+        # Overwrite the existing file with the new data
+        with open('combined_spotify_data_modified.json', 'w') as f:
+            json.dump(modified_data_without_null_items, f, indent=2)
+
+    def remove_ignored_items(self):
+        # Pull in the existing combined export
+        with open('combined_spotify_data_modified.json', 'r') as f:
+            modified_data = json.load(f)
+
+        # Filter out items will values in the ignore lists for track, artist, OR album
+        modified_data_without_ignored_items = [
+            item for item in modified_data
+            if item['master_metadata_album_artist_name'] not in IGNORE_ARTISTS and
+               item['master_metadata_album_album_name'] not in IGNORE_ALBUMS and
+               item['master_metadata_track_name'] not in IGNORE_TRACKS
+        ]
+
+        # Overwrite the existing file with the new data
+        with open('combined_spotify_data_modified.json', 'w') as f:
+            json.dump(modified_data_without_ignored_items, f, indent=2) 
+
     def remove_unneeded_data(self):
         # Pull in the existing combined export
         with open('combined_spotify_data_modified.json', 'r') as f:
-            modify_data = json.load(f)
+            modified_data = json.load(f)
             
-        # List of fields to remove
-        fields_to_remove = [
-            'username',
-            'platform',
-            'ip_addr_decrypted',
-            'user_agent_decrypted',
-            'episode_name',
-            'episode_show_name',
-            'spotify_episode_uri',
-            'offline',
-            'offline_timestamp',
-            'incognito_mode'
-        ]
-        
         # Remove unneeded fields 
-        for item in modify_data:
-            for field in fields_to_remove:
+        for item in modified_data:
+            for field in UNNEEDED_FIELDS:
                 if field in item:
                     del item[field]
         
         # Overwrite the existing file with the new data
         with open('combined_spotify_data_modified.json', 'w') as f:
-            json.dump(modify_data, f, indent=2)
-
-    def convert_duration_to_seconds(self):
-        # Pull in the existing combined export
-        with open('combined_spotify_data_modified.json', 'r') as f:
-            modify_data = json.load(f)
-
-        # Convert duration to seconds
-        for item in modify_data:
-            item['ms_played'] = round(item['ms_played'] / 1000, 2)
-
-        # Overwrite the existing file with the new data
-        with open('combined_spotify_data_modified.json', 'w') as f:
-            json.dump(modify_data, f, indent=2)
-
-    def clean_timestamp(self):
-        # Pull in the existing combined export
-        with open('combined_spotify_data_modified.json', 'r') as f:
-            modify_data = json.load(f)
-
-        # Clean up the timestamp
-        for item in modify_data:
-            # Remove the 'Z' and replace 'T' with a space
-            item['Timestamp'] = item['Timestamp'].replace('Z', '').replace('T', ' ')
-
-        # Overwrite the existing file with the new data
-        with open('combined_spotify_data_modified.json', 'w') as f:
-            json.dump(modify_data, f, indent=2)
+            json.dump(modified_data, f, indent=2)
 
     def rename_fields(self):
         # Pull in the existing combined export
         with open('combined_spotify_data_modified.json', 'r') as f:
-            modify_data = json.load(f)
-
-        fields_to_rename = {
-            'ts': 'Timestamp',
-            'ms_played': 'Play Duration (s)',
-            'conn_country': 'Country Listened',
-            'master_metadata_track_name': 'Track',
-            'master_metadata_album_artist_name': 'Arist',
-            'master_metadata_album_album_name': 'Album',
-            'spotify_track_uri': 'Track URL',
-            'reason_start': 'Start Reason',
-            'reason_end': 'End Reason',
-            'shuffle': 'Shuffle',
-            'skipped': 'Skipped'
-        }
+            modified_data = json.load(f)
 
         #  Rename the fields
-        for item in modify_data:
-            for old_name, new_name in fields_to_rename.items():
+        for item in modified_data:
+            for old_name, new_name in FIELDS_TO_RENAME.items():
                 if old_name in item:
                     item[new_name] = item.pop(old_name)
 
         # Overwrite the existing file with the new data
         with open('combined_spotify_data_modified.json', 'w') as f:
-            json.dump(modify_data, f, indent=2)
-    
-    def remove_ignored_items(self):
+            json.dump(modified_data, f, indent=2)
+
+    def clean_data(self):
         # Pull in the existing combined export
         with open('combined_spotify_data_modified.json', 'r') as f:
-            modify_data = json.load(f)
+            modified_data = json.load(f)
 
-        # Remove ignored items
-        for item in modify_data:
-            if item['Arist'] in IGNORE_ARTISTS:
-                modify_data.remove(item)
-            if item['Album'] in IGNORE_ALBUMS:
-                modify_data.remove(item)
-            if item['Track'] in IGNORE_TRACKS:
-                modify_data.remove(item)    
+        for item in modified_data:
+            # Convert duration to seconds
+            item['Play Duration (s)'] = round(item['Play Duration (s)'] / 1000, 2)
+            # Remove the 'Z' and replace 'T' with a space
+            item['Timestamp'] = item['Timestamp'].replace('Z', '').replace('T', ' ')
+            # Convert Spotify URI to ID
+            item['id'] = item['id'].replace('spotify:track:','')
 
         # Overwrite the existing file with the new data
         with open('combined_spotify_data_modified.json', 'w') as f:
-            json.dump(modify_data, f, indent=2) 
+            json.dump(modified_data, f, indent=2)
+        # Pull in the existing combined export
+        with open('combined_spotify_data_modified.json', 'r') as f:
+            modify_data = json.load(f)

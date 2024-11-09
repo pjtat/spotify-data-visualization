@@ -1,0 +1,17 @@
+{
+  "artists": [
+    {
+      "id": "",
+      "artwork_url": "",
+      "genres": [],
+      "albums": []
+    }
+  ],
+  "albums": [
+    {
+      "id": "",
+      "artwork_url": "",
+      "release_date": ""
+    }
+  ]
+}

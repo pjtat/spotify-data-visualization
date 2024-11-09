@@ -22,8 +22,8 @@ class SpotifyApiClient:
         auth_response_data = auth_response.json()
 
         return auth_response_data['access_token']
-    
-    def get_artist_genres(self, artist_id):
+
+    def get_artist_chart_info(self, artist_id):
         # Get artist genres from Spotify API
         url = f"https://api.spotify.com/v1/artists/{artist_id}"
 
@@ -35,35 +35,16 @@ class SpotifyApiClient:
 
         # Check if request was successful
         if response.status_code != 200:
-            raise Exception(f"Error getting genres: {response.status_code}")
+            error_body = response.json() if response.content else "No error details"
+            print(f"Failed request for artist: {artist_id}")
+            print(f"Response body: {error_body}")
+            raise Exception(f"Error getting artist info: {response.status_code}")
         
-        # Extract genres from response
-        genres = response.json().get('genres', [])
+        return response.json()
         
-        return genres
-
-    def get_artist_artwork(self, artist_id):
-        # Get artist artwork Spotify API
-        url = f"https://api.spotify.com/v1/artists/{artist_id}"
-
-        headers = {
-            "Authorization": f"Bearer {self.access_token}"
-        }
-        
-        response = requests.get(url, headers=headers)
-        
-        # Check if request was successful
-        if response.status_code != 200:
-            raise Exception(f"Error getting genres: {response.status_code}")
-        
-        # Get the first image URL if available, otherwise return None
-        artist_artwork = response.json().get('images', [])[0]['url']
-        
-        return artist_artwork
-        
-    def get_album_artwork(self, album_id):
+    def get_album_chart_info(self, album_id):
         # Get album artwork Spotify API
-        url = f"https://api.spotify.com/v1/tracks/{album_id}"
+        url = f"https://api.spotify.com/v1/albums/{album_id}"
 
         headers = {
             "Authorization": f"Bearer {self.access_token}"
@@ -73,13 +54,14 @@ class SpotifyApiClient:
         
         # Check if request was successful
         if response.status_code != 200:
-            raise Exception(f"Error getting genres: {response.status_code}")
+            error_body = response.json() if response.content else "No error details"
+            print(f"Failed request for album: {album_id}")
+            print(f"Response body: {error_body}")
+            raise Exception(f"Error getting album info: {response.status_code}")
         
-        album_artwork = response.json().get('images', [{}])[0].get('url', None)
-        
-        return album_artwork
+        return response.json()
     
-    def get_track_release_date(self, track_id):
+    def get_track_chart_info(self, track_id):
         # Get release date from Spotify API
         url = f"https://api.spotify.com/v1/tracks/{track_id}"  
 
@@ -89,11 +71,17 @@ class SpotifyApiClient:
 
         response = requests.get(url, headers=headers)
 
-        # Check if request was successful
+        # Add debugging information
+        print(f"Status Code: {response.status_code}")
+        print(f"Response Content: {response.content}")
+        
         if response.status_code != 200:
-            raise Exception(f"Error getting release date: {response.status_code}")
+            print(f"Error response headers: {response.headers}")
+            return None
         
-        # Release date is nested in the album object
-        release_date = response.json().get('album', {}).get('release_date', None)
-        
-        return release_date
+        try:
+            return response.json()
+        except requests.exceptions.JSONDecodeError as e:
+            print(f"Failed to decode JSON: {e}")
+            print(f"Raw response: {response.text}")
+            return None

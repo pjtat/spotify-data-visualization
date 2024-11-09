@@ -1,34 +1,45 @@
 # Spotify Listening Analysis with Tableau
 
-
-
-## Data Source
-- Personal Spotify account data requested through Spotify's official data download process
-- Data includes listening history, duration, geographical locations, and other user activity 
-
-## Features
-- Listening duration for songs/artists/albums for a customizable duration 
-- Top new albums for a customizable duration
-- *TBD*
+A data visualization project that transforms your personal Spotify listening history into interactive Tableau dashboards, providing insights into your music listening habits.
 
 ## Prerequisites
-- Spotify Account (Paid or Free)
+- Spotify Account (Free or Premium)
+- Tableau Public
+- Python 
 
-## Installation
+## Features 
+- Python script to preprocess Spotify data
+- Pre-configured Tableau dashboard with various visualizations such as:
+  - Most played songs/artists/albums by year/all time
+  - Top new songs/artists/albums of the year
+  - Most listened to genres 
+  - ...
 
-1. Request Spotify Listening History (It typically takes ~30 days to receive your full listening history)
+## Installation & Setup
 
-- Navigate to your Account Privacy page (https://www.spotify.com/us/account/privacy/)
-- Select the 'Select Extended streaming history' checkbox
-- Select Request Data 
+1. **Request Your Spotify Data**
+   - Go to [Spotify Account Privacy Settings](https://www.spotify.com/us/account/privacy/)
+   - Check 'Extended streaming history'
+   - Click 'Request Data'
+   
+   *Note: Full data delivery takes approximately 30 days*
 
-(This is the process as of Nov 3, 2024)
-
-**Note:** Spotify will first provide you with a preview of your listening history. The dashboard here requires the **full** listening history. 
-
-2. Clone this repository:
-   ```
+2. **Get the Project**
+   ```bash
    git clone https://github.com/pjtat/spotify-tableau-data-visualization.git
+   cd spotify-tableau-data-visualization
    ```
 
-3. 
+3. **Data Preparation**
+   - Once you receive your Spotify data, extract the files
+   - Place your `StreamingHistory*.json` files in the `data/raw` directory
+   - Run the preprocessing script:
+     ```bash
+     python src/main.py
+     ```
+
+4. **Tableau Setup**
+   - TBD
+
+## Contributing
+Contributions are welcome! Please feel free to submit a Pull Request.

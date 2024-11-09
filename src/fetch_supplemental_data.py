@@ -1,75 +1,72 @@
 import json
+import os
+
 from fetch_spotify_data import SpotifyApiClient
 
 def main():
    # Initialize Spotify API client
    spotify_api_client = SpotifyApiClient()
-
-   # Initialize artist and album data
-   artist_data = [
-      {
-            'id': '',
-            'artwork_url': '',
-            'genres': [],
-            'albums': []
-      }
-   ]
-   
-   album_data = [
-      {
-            'id': '',
-            'artwork_url': '',
-            'release_date': ''
-      }
-   ]
    
    # TEMPORARY - Use test file to limit calls
+   # UPDATE to use real file when ready
    with open('test-combined_spotify_data_modified.json', 'r') as f:
       modified_data = json.load(f)
 
-   # Pull in the existing combined export
-   # with open('combined_spotify_data_modified.json', 'r') as f:
-   #    modified_data = json.load(f)
-   
+   # Pull in existing supplemental data list
+   if os.path.exists('supplemental_track_data.json'):
+      with open('supplemental_track_data.json', 'r') as f:
+         supplemental_data = json.load(f)
+      supplemental_artist_data = supplemental_data['artists']
+      supplemental_album_data = supplemental_data['albums']
+   else:
+      with open('supplemental_track_data.json', 'w') as f:
+         json.dump({}, f, indent=2)
+      supplemental_artist_data = []
+      supplemental_album_data = []
+         
    for item in modified_data:
       # Identify track ID and pull track information
       track_id = item['id']
       track_info = spotify_api_client.get_track_chart_info(track_id)
       
-      # Identify artist ID 
-      artist_id = track_info.json()['artists'][0]['id']
+      # Identify artist ID and album ID
+      artist_id = track_info['album']['artists'][0]['id']
+      album_id = track_info['album']['id']
 
-      # Check if the artist is already in the artist data
-      if not any(artist['id'] == artist_id for artist in artist_data):
+      # Check if artist exists in current data
+      artist_exists = any(artist['artist_id'] == artist_id for artist in supplemental_artist_data)
+      print(f"Checking artist {artist_id}: {'exists' if artist_exists else 'new'}")
+      
+      # If the artist is not in the supplemental data, pull the artist information
+      if not artist_exists:
          # Pull the artist information
          artist_info = spotify_api_client.get_artist_chart_info(artist_id)
-
+         
          # Add the artist information to the artist data
-         artist_data.append({
-               'id': artist_id,
-               'artwork_url': artist_info['artist_artwork_url'],
-               'genres': artist_info['genres'],
-               'albums': []
+         supplemental_artist_data.append({
+               'artist_id': artist_id,
+               'artwork_url': artist_info['images'][0]['url'],
+               'genres': artist_info['genres']
          })
-      
-      # Identify album ID
-      album_id = track_info.json()['album']['id']
 
-      # Check if the album is already in the album data
-      if not any(album['id'] == album_id for album in album_data):    
-        # Pull the album information
-        album_info = spotify_api_client.get_album_chart_info(album_id)
+      album_exists = any(album['album_id'] == album_id for album in supplemental_album_data)
+      print(f"Checking album {album_id}: {'exists' if album_exists else 'new'}")
 
-        # Add the album information to the album data
-        album_data.append({
-            'id': album_id,
-            'artwork_url': album_info['album_artwork_url'],
-            'release_date': album_info['album_release_date']
+      # If the album is not in the supplemental data, pull the album information
+      if not album_exists:
+         # Pull the album information
+         album_info = spotify_api_client.get_album_chart_info(album_id)
+
+         # Add the album information to the album data
+         supplemental_album_data.append({
+               'album_id': album_id,
+               'artwork_url': album_info['images'][0]['url'],
+               'release_date': album_info['release_date']
         })
 
       supplemental_data = {
-         'artists': artist_data,
-         'albums': album_data
+         'artists': supplemental_artist_data,
+         'albums': supplemental_album_data
       }
 
       # Overwrite the existing file with the new data

@@ -1,9 +1,50 @@
-import requests 
+import requests
+import logging
+import time
+
 from config import CLIENT_ID, CLIENT_SECRET 
+from datetime import datetime, timedelta
+
+# Basic configuration
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler('spotify_api.log'),
+        logging.StreamHandler()  # This will still print to console
+    ]
+)
+
+class RateLimiter:
+    def __init__(self, requests_per_day):
+        self.requests_per_day = requests_per_day
+        self.tokens = requests_per_day
+        self.last_updated = datetime.now()
+    
+    def acquire(self):
+        now = datetime.now()
+        time_passed = now - self.last_updated
+        
+        # Replenish tokens based on time passed
+        self.tokens = min(
+            self.requests_per_day,
+            self.tokens + (time_passed.total_seconds() * self.requests_per_day / (24 * 3600))
+        )
+        
+        if self.tokens < 1:
+            sleep_time = (1 - self.tokens) * (24 * 3600) / self.requests_per_day
+            logging.warning(f"Rate limit reached. Sleeping for {sleep_time:.2f} seconds")
+            time.sleep(sleep_time)
+            self.tokens = 1
+            
+        self.tokens -= 1
+        self.last_updated = now
 
 class SpotifyApiClient: 
     def __init__(self):
         self.access_token = self._get_access_token()
+        # Initialize rate limiter with 10,000 requests per day (adjust as needed)
+        self.rate_limiter = RateLimiter(10000)
 
     def _get_access_token(self):
         # Define the endpoint and your credentials
@@ -22,66 +63,61 @@ class SpotifyApiClient:
         auth_response_data = auth_response.json()
 
         return auth_response_data['access_token']
-
-    def get_artist_chart_info(self, artist_id):
-        # Get artist genres from Spotify API
-        url = f"https://api.spotify.com/v1/artists/{artist_id}"
-
-        headers = {
-            "Authorization": f"Bearer {self.access_token}"
-        }
-
-        response = requests.get(url, headers=headers)
-
-        # Check if request was successful
-        if response.status_code != 200:
-            error_body = response.json() if response.content else "No error details"
-            print(f"Failed request for artist: {artist_id}")
-            print(f"Response body: {error_body}")
-            raise Exception(f"Error getting artist info: {response.status_code}")
-        
-        return response.json()
-        
-    def get_album_chart_info(self, album_id):
-        # Get album artwork Spotify API
-        url = f"https://api.spotify.com/v1/albums/{album_id}"
-
-        headers = {
-            "Authorization": f"Bearer {self.access_token}"
-        }
-        
-        response = requests.get(url, headers=headers)
-        
-        # Check if request was successful
-        if response.status_code != 200:
-            error_body = response.json() if response.content else "No error details"
-            print(f"Failed request for album: {album_id}")
-            print(f"Response body: {error_body}")
-            raise Exception(f"Error getting album info: {response.status_code}")
-        
-        return response.json()
     
-    def get_track_chart_info(self, track_id):
-        # Get release date from Spotify API
-        url = f"https://api.spotify.com/v1/tracks/{track_id}"  
-
+    def _make_request(self, url, retry_count=0):
+        """Makes a GET request to the Spotify API with proper authorization headers"""
+        # Check rate limit before making request
+        self.rate_limiter.acquire()
+        
         headers = {
             "Authorization": f"Bearer {self.access_token}"
         }
-
-        response = requests.get(url, headers=headers)
-
-        # Add debugging information
-        print(f"Status Code: {response.status_code}")
-        print(f"Response Content: {response.content}")
-        
-        if response.status_code != 200:
-            print(f"Error response headers: {response.headers}")
-            return None
-        
         try:
-            return response.json()
-        except requests.exceptions.JSONDecodeError as e:
-            print(f"Failed to decode JSON: {e}")
-            print(f"Raw response: {response.text}")
-            return None
+            response = requests.get(url, headers=headers)
+            
+            if response.status_code == 401 and retry_count < 1:
+                self.access_token = self._get_access_token()
+                return self._make_request(url, retry_count + 1)
+                
+            response.raise_for_status()
+            logging.info(f"Successfully made request to {url} with status code {response.status_code}")
+            
+        except requests.exceptions.HTTPError as e:
+            if response.status_code == 429:
+                logging.error("Rate limit exceeded (429). Too many requests.")
+            else:
+                logging.error(f"HTTP error occurred: {response.status_code}")
+            raise Exception(f"HTTP error {response.status_code}")
+            
+        except requests.exceptions.RequestException as e:
+            logging.error(f"Request failed: {str(e)}")
+            raise Exception(f"Request failed: {str(e)}")
+
+        return response
+    def get_item_info(self, item_id: str, item_type: str) -> dict:
+        """
+        Get information about a Spotify item (artist, album, or track)
+        
+        Args:
+            item_id (str): Spotify ID for the item
+            item_type (str): Type of item ('artists', 'albums', or 'tracks')
+            
+        Returns:
+            dict: JSON response from Spotify API
+        """
+        # Create request URL
+        url = f"https://api.spotify.com/v1/{item_type}/{item_id}"
+        
+        # Make request
+        response = self._make_request(url)
+        return response.json()
+
+    # Convenience methods to maintain clear API
+    def get_artist_chart_info(self, artist_id: str) -> dict:
+        return self.get_item_info(artist_id, "artists")
+        
+    def get_album_chart_info(self, album_id: str) -> dict:
+        return self.get_item_info(album_id, "albums")
+    
+    def get_track_chart_info(self, track_id: str) -> dict:
+        return self.get_item_info(track_id, "tracks")

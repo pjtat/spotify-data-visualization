@@ -1,17 +1,134 @@
 {
   "artists": [
     {
-      "id": "",
-      "artwork_url": "",
-      "genres": [],
-      "albums": []
+      "artist_id": "5Q81rlcTFh3k6DQJXPdsot",
+      "artwork_url": "https://i.scdn.co/image/ab6761610000e5eb3aca38c42551f532b6fefc16",
+      "genres": [
+        "channel islands indie",
+        "escape room",
+        "hyperpop",
+        "indie soul",
+        "vapor soul"
+      ]
+    },
+    {
+      "artist_id": "4r63FhuTkUYltbVAg5TQnk",
+      "artwork_url": "https://i.scdn.co/image/ab6761610000e5ebbd6918901c1714560669f570",
+      "genres": [
+        "hip hop",
+        "north carolina hip hop",
+        "pop rap",
+        "rap",
+        "trap"
+      ]
+    },
+    {
+      "artist_id": "0jNDKefhfSbLR9sFvcPLHo",
+      "artwork_url": "https://i.scdn.co/image/ab6761610000e5eb082c34e225913f6f5ef6f420",
+      "genres": [
+        "brostep",
+        "edm",
+        "electro house",
+        "electronic trap",
+        "future bass",
+        "pop dance"
+      ]
+    },
+    {
+      "artist_id": "2uFUBdaVGtyMqckSeCl0Qj",
+      "artwork_url": "https://i.scdn.co/image/ab6761610000e5eb86008946f7c35b22282d7e8c",
+      "genres": [
+        "compositional ambient",
+        "neo-classical"
+      ]
+    },
+    {
+      "artist_id": "27gtK7m9vYwCyJ04zz0kIb",
+      "artwork_url": "https://i.scdn.co/image/ab6761610000e5eb76d679823655e84fe5ca9bd6",
+      "genres": [
+        "gauze pop",
+        "melodic house",
+        "progressive house"
+      ]
+    },
+    {
+      "artist_id": "4AGwPDdh1y8hochNzHy5HC",
+      "artwork_url": "https://i.scdn.co/image/ab6761610000e5eb1fd073cc30283438f8512ba6",
+      "genres": [
+        "indietronica",
+        "metropopolis",
+        "nu disco",
+        "shimmer pop"
+      ]
+    },
+    {
+      "artist_id": "5K4W6rqBFWDnAN6FQUkS6x",
+      "artwork_url": "https://i.scdn.co/image/ab6761610000e5eb6e835a500e791bf9c27a422a",
+      "genres": [
+        "chicago rap",
+        "hip hop",
+        "rap"
+      ]
+    },
+    {
+      "artist_id": "5SXuuuRpukkTvsLuUknva1",
+      "artwork_url": "https://i.scdn.co/image/ab6761610000e5ebd6f2323c1971fd5a70cd0255",
+      "genres": [
+        "hip hop",
+        "rap"
+      ]
     }
   ],
   "albums": [
     {
-      "id": "",
-      "artwork_url": "",
-      "release_date": ""
+      "album_id": "0NBTBo1qrg554sAj79nEqD",
+      "artwork_url": "https://i.scdn.co/image/ab67616d0000b2736818aa231aa543cf87e1374a",
+      "release_date": "2017-07-14"
+    },
+    {
+      "album_id": "6SL49HqoUwu2hhfukBAK3Q",
+      "artwork_url": "https://i.scdn.co/image/ab67616d0000b273e818d05b79be19f4d49f1ebf",
+      "release_date": "2020-08-04"
+    },
+    {
+      "album_id": "046wH7DEfUumC5h9ykIEkd",
+      "artwork_url": "https://i.scdn.co/image/ab67616d0000b2738c2877b422fdee55ad880ead",
+      "release_date": "2021-06-04"
+    },
+    {
+      "album_id": "7t6TgWkJUkrtbMtcpk7sh0",
+      "artwork_url": "https://i.scdn.co/image/ab67616d0000b27334b3f7d6bfcd836a3bfa4b8f",
+      "release_date": "2020-01-31"
+    },
+    {
+      "album_id": "3uJ6D2WOPdjwJ0SrsH9EiG",
+      "artwork_url": "https://i.scdn.co/image/ab67616d0000b2736c8ef0538e04f2e28380dcc5",
+      "release_date": "2013-01-01"
+    },
+    {
+      "album_id": "6EdbqQvOCialJuOjEEUlsL",
+      "artwork_url": "https://i.scdn.co/image/ab67616d0000b2738e62ab7239cd10dfc2404d2f",
+      "release_date": "2020-01-10"
+    },
+    {
+      "album_id": "0pvp7cHQccsevHLhClFbSz",
+      "artwork_url": "https://i.scdn.co/image/ab67616d0000b2735dc08a1f177fbec3ce382c1d",
+      "release_date": "2014-01-01"
+    },
+    {
+      "album_id": "340MjPcVdiQRnMigrPybZA",
+      "artwork_url": "https://i.scdn.co/image/ab67616d0000b2736ba1cffc9b2c5469503430b3",
+      "release_date": "2021-08-29"
+    },
+    {
+      "album_id": "3HqmX8hGcbbQZODgayNEYx",
+      "artwork_url": "https://i.scdn.co/image/ab67616d0000b273163028c67a1f4a7c0e83a715",
+      "release_date": "2021-08-27"
+    },
+    {
+      "album_id": "2JFAT4IDF89ZMmuxoOKbQ1",
+      "artwork_url": "https://i.scdn.co/image/ab67616d0000b27377fd541561004220c4615b7a",
+      "release_date": "2021-04-30"
     }
   ]
 }

@@ -88,7 +88,14 @@ class SpotifyApiClient:
             
         except requests.exceptions.HTTPError as e:
             if response.status_code == 429:
-                logging.error("Rate limit exceeded (429). Too many requests.")
+                retry_after = response.headers.get('Retry-After', 'unknown')
+                remaining = response.headers.get('X-RateLimit-Remaining', 'unknown')
+                limit = response.headers.get('X-RateLimit-Limit', 'unknown')
+                logging.error(
+                    f"Rate limit exceeded (429). Too many requests.\n"
+                    f"Retry after: {int(retry_after) // 3600}h {(int(retry_after) % 3600) // 60}m\n"
+                    f"Current token count: {self.rate_limiter.tokens:.2f}"
+                )
             else:
                 logging.error(f"HTTP error occurred: {response.status_code}")
             raise Exception(f"HTTP error {response.status_code}")

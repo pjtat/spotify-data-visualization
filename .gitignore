@@ -1,7 +1,7 @@
 **/.DS_Store
 **/config.yaml
 **/spotify_api.log
-!**/logs/.gitkeep
+**/spotify_api.log
 
 # Data directory handling
 **/data/raw/**

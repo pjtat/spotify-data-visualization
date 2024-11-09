@@ -1,17 +1,21 @@
 import requests
 import logging
 import time
+import yaml
+import os
 
-from config import CLIENT_ID, CLIENT_SECRET 
+from config import Config
 from datetime import datetime, timedelta
 
-# Basic configuration
+# # Create logs directory if it doesn't exist
+# os.makedirs('logs', exist_ok=True)
+
+# Configure logging
 logging.basicConfig(
     level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    format='%(asctime)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.FileHandler('spotify_api.log'),
-        logging.StreamHandler()  # This will still print to console
+        logging.FileHandler('logs/spotify_api.log')
     ]
 )
 
@@ -49,8 +53,8 @@ class SpotifyApiClient:
     def _get_access_token(self):
         # Define the endpoint and your credentials
         url = "https://accounts.spotify.com/api/token"
-        client_id = CLIENT_ID
-        client_secret = CLIENT_SECRET
+        client_id = Config.get('client_id')
+        client_secret = Config.get('client_secret')
 
         # Get access token
         auth_response = requests.post(url, {

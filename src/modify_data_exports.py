@@ -2,7 +2,18 @@ import os
 import json
 
 from os.path import dirname
-from config import IGNORE_ARTISTS, IGNORE_ALBUMS, IGNORE_TRACKS, UNNEEDED_FIELDS, FIELDS_TO_RENAME
+from config import Config
+
+# Load all ignore and field configs at once
+IGNORE_CONFIG = {
+    'artists': Config.get('ignore_artists'),
+    'albums': Config.get('ignore_albums'),
+    'tracks': Config.get('ignore_tracks')
+}
+FIELD_CONFIG = {
+    'unneeded': Config.get('unneeded_fields'),
+    'rename': Config.get('fields_to_rename')
+}
 
 # Initialize Spotify API client
 from fetch_spotify_data import SpotifyApiClient
@@ -64,9 +75,9 @@ class ModifyDataExports:
         # Filter out items will values in the ignore lists for track, artist, OR album
         modified_data_without_ignored_items = [
             item for item in modified_data
-            if item['master_metadata_album_artist_name'] not in IGNORE_ARTISTS and
-               item['master_metadata_album_album_name'] not in IGNORE_ALBUMS and
-               item['master_metadata_track_name'] not in IGNORE_TRACKS
+            if item['master_metadata_album_artist_name'] not in IGNORE_CONFIG['artists'] and
+               item['master_metadata_album_album_name'] not in IGNORE_CONFIG['albums'] and
+               item['master_metadata_track_name'] not in IGNORE_CONFIG['tracks']
         ]
 
         # Overwrite the existing file with the new data
@@ -80,7 +91,7 @@ class ModifyDataExports:
             
         # Remove unneeded fields 
         for item in modified_data:
-            for field in UNNEEDED_FIELDS:
+            for field in FIELD_CONFIG['unneeded']:
                 if field in item:
                     del item[field]
         
@@ -95,7 +106,7 @@ class ModifyDataExports:
 
         #  Rename the fields
         for item in modified_data:
-            for old_name, new_name in FIELDS_TO_RENAME.items():
+            for old_name, new_name in FIELD_CONFIG['rename'].items():
                 if old_name in item:
                     item[new_name] = item.pop(old_name)
 
@@ -119,6 +130,3 @@ class ModifyDataExports:
         # Overwrite the existing file with the new data
         with open('combined_spotify_data_modified.json', 'w') as f:
             json.dump(modified_data, f, indent=2)
-        # Pull in the existing combined export
-        with open('combined_spotify_data_modified.json', 'r') as f:
-            modify_data = json.load(f)

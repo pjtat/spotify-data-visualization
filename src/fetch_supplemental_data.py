@@ -1,25 +1,35 @@
 import json
 import os
+import logging
 
 from fetch_spotify_data import SpotifyApiClient
 
 def main():
+   # Set up logging configuration
+   logging.basicConfig(
+       filename='data/logs/fetch_supplemental.log',
+       level=logging.INFO,
+       format='%(asctime)s - %(message)s',
+       datefmt='%Y-%m-%d %H:%M:%S'
+   )
+   
    # Initialize Spotify API client
    spotify_api_client = SpotifyApiClient()
    
    # TEMPORARY - Use test file to limit calls
    # UPDATE to use real file when ready
-   with open('test-combined_spotify_data_modified.json', 'r') as f:
-      modified_data = json.load(f)
+   test_file_path = 'data/test/test-combined_spotify_data_modified.json'
+   with open(test_file_path, 'r') as f:
+       modified_data = json.load(f)
 
    # Pull in existing supplemental data list
-   if os.path.exists('supplemental_track_data.json'):
-      with open('supplemental_track_data.json', 'r') as f:
+   if os.path.exists('data/processed/supplemental_track_data.json'):
+      with open('data/processed/supplemental_track_data.json', 'r') as f:
          supplemental_data = json.load(f)
       supplemental_artist_data = supplemental_data['artists']
       supplemental_album_data = supplemental_data['albums']
    else:
-      with open('supplemental_track_data.json', 'w') as f:
+      with open('data/processed/supplemental_track_data.json', 'w') as f:
          json.dump({}, f, indent=2)
       supplemental_artist_data = []
       supplemental_album_data = []
@@ -35,7 +45,7 @@ def main():
 
       # Check if artist exists in current data
       artist_exists = any(artist['artist_id'] == artist_id for artist in supplemental_artist_data)
-      print(f"Checking artist {artist_id}: {'exists' if artist_exists else 'new'}")
+      logging.info(f"Checking artist {artist_id}: {'exists' if artist_exists else 'new'}")
       
       # If the artist is not in the supplemental data, pull the artist information
       if not artist_exists:
@@ -50,7 +60,7 @@ def main():
          })
 
       album_exists = any(album['album_id'] == album_id for album in supplemental_album_data)
-      print(f"Checking album {album_id}: {'exists' if album_exists else 'new'}")
+      logging.info(f"Checking album {album_id}: {'exists' if album_exists else 'new'}")
 
       # If the album is not in the supplemental data, pull the album information
       if not album_exists:
@@ -70,8 +80,8 @@ def main():
       }
 
       # Overwrite the existing file with the new data
-      with open('supplemental_track_data.json', 'w') as f:
+      with open('data/processed/supplemental_track_data.json', 'w') as f:
          json.dump(supplemental_data, f, indent=2)
 
 if __name__ == "__main__":
-    main()
+   main()

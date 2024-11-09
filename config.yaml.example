@@ -1,0 +1,44 @@
+# Spotify API Setup
+client_id: ""
+client_secret: ""
+
+# List of unneeded fields to remove
+unneeded_fields:
+  - 'username'
+  - 'platform'
+  - 'ip_addr_decrypted'
+  - 'user_agent_decrypted'
+  - 'episode_name'
+  - 'episode_show_name'
+  - 'spotify_episode_uri'
+  - 'offline'
+  - 'offline_timestamp'
+  - 'incognito_mode'
+  - 'reason_start'
+  - 'reason_end'
+  - 'shuffle'
+  - 'skipped'
+
+# Fields to rename
+fields_to_rename:
+  ts: 'Timestamp'
+  ms_played: 'Play Duration (s)'
+  conn_country: 'Country Listened'
+  master_metadata_track_name: 'Track'
+  master_metadata_album_artist_name: 'Arist'
+  master_metadata_album_album_name: 'Album'
+  spotify_track_uri: 'id'
+  reason_start: 'Start Reason'
+  reason_end: 'End Reason'
+  shuffle: 'Shuffle'
+  skipped: 'Skipped'
+
+# Spotify Excluded Items
+ignore_artists:
+  - ""
+
+ignore_albums:
+  - ""
+
+ignore_tracks:
+  - ""

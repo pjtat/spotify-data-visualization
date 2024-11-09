@@ -1,16 +1,9 @@
 **/.DS_Store
 **/config.yaml
-
 **/spotify_api.log
 !**/logs/.gitkeep
 
-# Ignore all contents in data directories but keep the example files
-**/data/**
-
-!**/data/processed/supplemental_track_data-example.json.gitkeep
-!**/data/processed/combined_spotify_data_raw-example.json.gitkeep
-!**/data/combined_spotify_data_modified-example.json.gitkeep
-
-!**/data/raw/Streaming_History_Audio_2014-2016_0-example.json.gitkeep
-
-!**/data/test/Streaming_History_Audio_YYYY-YYYY_#-example.json.gitkeep
+# Data directory handling
+**/data/raw/**
+**/data/processed/**
+**/data/test/**

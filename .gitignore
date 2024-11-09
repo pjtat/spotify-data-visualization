@@ -1,7 +1,15 @@
 **/.DS_Store
 **/config.yaml
+
 **/spotify_api.log
-**/data/raw
-**/data/processed
-**/data/test
-**/supplemental_track_data.json
+!**/logs/.gitkeep
+
+# Ignore all contents in data directories but keep the folders
+**/data/**
+!**/data/
+!**/data/raw/
+!**/data/processed/
+!**/data/test/
+!**/data/raw/.gitkeep
+!**/data/processed/.gitkeep
+!**/data/test/.gitkeep

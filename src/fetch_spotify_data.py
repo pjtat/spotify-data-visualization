@@ -1,14 +1,9 @@
 import requests
 import logging
 import time
-import yaml
-import os
 
 from config import Config
 from datetime import datetime, timedelta
-
-# # Create logs directory if it doesn't exist
-# os.makedirs('logs', exist_ok=True)
 
 # Configure logging
 logging.basicConfig(
